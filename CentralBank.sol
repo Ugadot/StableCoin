@@ -30,4 +30,4 @@ contract CentralBank{
 	function getC2D() public view returns (float){
 		return C2D_ratio;
 	}
-	
+};
