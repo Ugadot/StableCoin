@@ -18,10 +18,11 @@ contract CentralBank{
 		// Make ratio between 0.5 and 1.5
 
 		C2D_ratio = (randomNum + mod / 2) / float(mod / 2);
-		uint current_amount = _coin_contract.getTotalAmount();
+		float current_amount = _coin_contract.getTotalAmount();
 		if (C2D_ratio > 1)
 		{
-			_coin_contract.inflate();
+			float _amount_to_inflate = current_amount * C2D_ratio - current_amount;
+			_coin_contract.InflateBalance(_amount_to_inflate);
 		}
 	}
 	
