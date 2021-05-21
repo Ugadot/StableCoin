@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 contract Coin{
-	address CentralBank = 0x70fdAc39369d55464b410e2fCbbd4b78E002eD25;
+	address CentralBank = 0xaaa;  //TODO: Fill Central Bank address here
 	mapping(address => float) balances;
 	mapping(address => uint) bonds;
 	mapping(address => uint) shares;
@@ -13,25 +13,42 @@ contract Coin{
 		balances[_to]+=_amount;
 	}
 
-	function getBalance(address _owner) public view returns (float){
-		return balances[_owner];
+	function getBalance(address _user) public view returns (float){
+		return balances[_user];
 	}
 
 	
-	function mint(float _amount){
+	function InflateBalance(float _amount){
 		require(msg.sender == CentralBank);
 		balances[CentralBank]+=_amount;
 		uint totalShares = shares[CentralBank];
+		// devide added amount to all users holding shares respectivley
 		for (int i=0; i<Users.length;i++)
 		{
 			if (shares[i] > 0){
 				float new_coins = (shares[i] / float(totalShares)) * _amount;
+				balances[i] += new_coins;
 			}
 		}
 	}
 	
-	function burn(address _from,uint _amount) payable{
+	function produceShare(address _to, uint _amount) payable{
+		require(msg.sender == CentralBank);
+		shares[CentralBank]+=_amount;
+		shares[_to]+=_amount;
+	}
+	
+	function sellBond(uint _amount) payable{
+		require(bonds[msg.sender] >= _amount);
+		bonds[msg.sender]-=_amount;
+		
+		// User gets _amount of real USD $
+	}
+	
+	function buyBond(uint _amount) payable{
+		require(balances[msg.sender] >= _amount);
+		bonds[msg.sender]+=_amount;
+		balances[msg.sender]-=_amount;
 		balances[CentralBank]-=_amount;
-		balances[_from]-=_amount;
 	}
 }
