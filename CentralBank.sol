@@ -3,6 +3,7 @@ pragma solidity ^0.5.0;
 contract CentralBank{
 	//address Oracle = 0xaaa;  //TODO: Fill Oracle address here
 	uint mod = 256;
+	address CentralBank = 0xaaa;  //TODO: Fill Central Bank address here
 
 	//Coin to 2 ration if > 1 need to infalte coin base, if < 1 need users to buy bons and lower the amount of total coins
 	float C2D_ratio;
@@ -18,7 +19,7 @@ contract CentralBank{
 		// Make ratio between 0.5 and 1.5
 
 		C2D_ratio = (randomNum + mod / 2) / float(mod / 2);
-		float current_amount = _coin_contract.getTotalAmount();
+		float current_amount = _coin_contract.getBalance(CentralBank);
 		if (C2D_ratio > 1)
 		{
 			float _amount_to_inflate = current_amount * C2D_ratio - current_amount;
@@ -26,7 +27,7 @@ contract CentralBank{
 		}
 	}
 	
-	function getC2D() public returns(float){
+	function getC2D() public view returns (float){
 		return C2D_ratio;
 	}
 	
