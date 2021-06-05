@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 contract Coin{
-	address centralBankAddress = 0xd9145CCE52D386f254917e481eB44e9943F39138;
+	address centralBankAddress;
 
 	mapping(address => uint) balances;
 	mapping(address => uint) bonds;
@@ -9,6 +9,10 @@ contract Coin{
 	address[] public users;
 	uint startingAmount = 100;
 	uint constMultiplier = 1000;
+
+	constructor (address bank_address) public {
+		centralBankAddress = bank_address;
+	}
 
 	function register() public {
 	    bool exists = false;
@@ -69,5 +73,9 @@ contract Coin{
 		bonds[msg.sender]+=_amount;
 		balances[msg.sender]-=_amount;
 		balances[centralBankAddress]-=_amount;
+	}
+	
+	function getBankAddress() public view returns (address){
+		return centralBankAddress;
 	}
 }

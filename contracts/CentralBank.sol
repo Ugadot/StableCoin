@@ -12,7 +12,7 @@ contract CentralBank{
     event Log(address indexed sender, string message);
     
     function setCoin(address _coin_address) public {
-         _coin_contract = Coin(_coin_address);  
+         _coin_contract = Coin(_coin_address);
     }
   
 	function updateC2D() public {
@@ -37,5 +37,9 @@ contract CentralBank{
 	
 	function getC2D() public view returns (uint){
 		return C2D_ratio;
+	}
+	
+	function getCoinAddress() public view returns (address){
+		return address(_coin_contract);
 	}
 }
