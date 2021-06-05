@@ -9,7 +9,7 @@ contract Coin{
 	address[] public users;
 	uint startingAmount = 100;
 	uint constMultiplier = 1000;
-
+	uint startingSharesAmount = 1;
 	constructor (address bank_address) public {
 		centralBankAddress = bank_address;
 	}
@@ -25,6 +25,8 @@ contract Coin{
 	        users.push(msg.sender);
 	        balances[msg.sender] += startingAmount;
 	        balances[centralBankAddress] += startingAmount;
+                shares[msg.sender] += startingSharesAmount;
+	        shares[centralBankAddress] += startingSharesAmount;
 	    }
 	}
 	

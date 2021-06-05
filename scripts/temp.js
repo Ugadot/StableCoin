@@ -29,13 +29,52 @@ module.exports = async function(callback) {
 		// Register first user
 		const account_one = accounts[0];
 		await coin.register({ from: account_one });
-		const balance = await coin.getBalance(account_one);
-		console.log('Account 1 balance is: ', balance);
+		var balance = await coin.getBalance(account_one);
+		console.log('Account 1 balance is: ', Number(balance));
 		
 		//produce shares to account 1
-		await coin.produceShare(account_one, 100);
-		const shares = await coin.getShareBalance(account_one);
-		console.log('Account 1 shares is: ', shares);
+		//await coin.produceShare(account_one, 100);
+		var shares = await coin.getShareBalance(account_one);
+		console.log('Account 1 shares is: ', Number(shares));
+		
+		// Register first user
+		const account_two = accounts[1];
+		await coin.register({ from: account_two });
+		balance = await coin.getBalance(account_two);
+		console.log('Account 2 balance is: ', Number(balance));
+		
+		//produce shares to account 1
+		//await coin.produceShare(account_one, 100);
+		shares = await coin.getShareBalance(account_two);
+		console.log('Account 2 shares is: ', Number(shares));
+		
+		console.log('\n\nTransfering Money......\n\n');
+
+		//Transfer coins from account 1 to account 2
+		await coin.transferAmount(account_two, 50, { from: account_one });
+		//Print new balance
+		balance = await coin.getBalance(account_one);
+		console.log('Account 1 balance is: ', Number(balance));
+		balance = await coin.getBalance(account_two);
+		console.log('Account 2 balance is: ', Number(balance));
+		
+		
+		console.log('\n\nUpdating C2D......');
+		await bank.updateC2D();
+		var c2d = await bank.getC2D();
+		while (c2d < 100)
+		{
+			await bank.updateC2D();
+			c2d = await bank.getC2D();
+		}
+		console.log('New C2D is ', Number(c2d));
+		console.log('\nNew Accounts balances is:');
+		//Print new balance
+		balance = await coin.getBalance(account_one);
+		console.log('Account 1 balance is: ', Number(balance));
+		balance = await coin.getBalance(account_two);
+		console.log('Account 2 balance is: ', Number(balance));
+	
 	}
 	catch(error) {
 		console.log(error)
