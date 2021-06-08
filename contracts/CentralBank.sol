@@ -3,7 +3,7 @@ import "./Coin.sol";
 import "./Oracle.sol";
 
 contract CentralBank{
-	uint mod = 100;
+	uint constant coinUnit = 100; // amount of mini-units in one coin (needed because there's no float in solidity)
 	address centralBankAddress = address(this);
 	// Coin
 	Coin _coin_contract;
@@ -23,26 +23,23 @@ contract CentralBank{
     }
 	
 	function updateC2D() public {
-		uint current_amount = _coin_contract.getBalance(centralBankAddress);
-		// C2D_ratio = _oracle_contract.getC2DRatio(current_amount);
-		// currently use random between [50, 150]
-		uint randomNum = (uint(keccak256(abi.encodePacked(
-				  now, 
-				  block.difficulty, 
-				  msg.sender
-				))) % mod);
+		uint current_amount = _coin_contract.getBalance();
+		C2D_ratio = _oracle_contract.getC2DRatio(current_amount);
 				
-		// Make ratio between mod/2 and mod*3/2
-		C2D_ratio = randomNum + mod/2;
-		if (C2D_ratio > mod)
+		if (C2D_ratio > coinUnit)
 		{
-            emit Log(msg.sender, "C2D_ratio > mod");
-			uint _amount_to_inflate = (current_amount * C2D_ratio) / mod - current_amount;
+			uint _amount_to_inflate = (current_amount * C2D_ratio) / coinUnit - current_amount;
 			_coin_contract.InflateBalance(_amount_to_inflate);
+		} 
+		else if (C2D_ratio < coinUnit){
+			uint bonds_amount = current_amount - (current_amount * C2D_ratio) / coinUnit;
+			_coin_contract.initAuction(bonds_amount);
 		}
+		
 	}
 	
-	function getC2D() public view returns (uint){
+	function getC2D() public returns (uint){
+		updateC2D();
 		return C2D_ratio;
 	}
 	
