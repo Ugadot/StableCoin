@@ -9,13 +9,13 @@ contract Coin{
 	mapping(address => uint) bonds;
 	mapping(address => uint) shares;
 	address[] public users;
-	uint startingAmount = 100;
+	uint startingAmount = 10000;
 	uint constMultiplier = 1000;
 	uint startingSharesAmount = 1;
 	mapping(address => bool) isInAuctionMapping;
 	mapping(address => uint) auctionAmount;
 	mapping(address => uint) auctionPrice;
-	uint[] auctionDivisionOrder;
+	mapping(uint => uint) auctionDivisionOrder;
 	uint currentAuctionBonds;
 	
 	constructor (address bank_address) public {
@@ -114,7 +114,7 @@ contract Coin{
 		auctionPrice[msg.sender] = price;
 	}
 	
-	function conductAuction() public returns (uint) {
+	function conductAuction() public {
 		uint current_max_price = 0;
 		uint current_max_user = 0;
 		uint current_amount = 0;
@@ -122,7 +122,7 @@ contract Coin{
 		uint clearing_price = coinUnit;
 		uint round = 0;
 		
-		if(currentAuctionBonds == 0) return 0;
+		if(currentAuctionBonds == 0) return;
 		
 		for (uint i=0; i<users.length; i++){
 			total_users_amount += auctionAmount[users[i]];
@@ -131,7 +131,9 @@ contract Coin{
 			// not enough offers.
 			// give all users their asked amount for the clearing price, which is the minimum offer.
 			for (uint i=0; i<users.length; i++){
-				if(auctionPrice[users[i]] < clearing_price) clearing_price = auctionPrice[users[i]];
+				if(auctionPrice[users[i]] < clearing_price){
+					clearing_price = auctionPrice[users[i]];
+				}
 				// set the order of division
 				auctionDivisionOrder[i] = i;
 			}
@@ -180,7 +182,6 @@ contract Coin{
 		}
 		
 		initAuction(currentAuctionBonds - current_amount); // call auction with the bonds left (also if there are no bonds left).
-		return 1;
 	}
 	
 }

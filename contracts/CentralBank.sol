@@ -10,8 +10,8 @@ contract CentralBank{
 	// Oracle
 	Oracle _oracle_contract;
 	//Coin to dollar ratio. (if > 1 need to infalte coin base, if < 1 need users to buy bons and lower the amount of total coins)
-	uint C2D_ratio;
-
+	uint C2D_ratio = coinUnit;
+	
     event Log(address indexed sender, string message);
     
     function setCoin(address _coin_address) public {
@@ -23,6 +23,8 @@ contract CentralBank{
     }
 	
 	function updateC2D() public {
+
+		emit Log(msg.sender, "begin update C2D");
 		uint current_amount = _coin_contract.getBalance();
 		C2D_ratio = _oracle_contract.getC2DRatio(current_amount);
 				
@@ -38,8 +40,7 @@ contract CentralBank{
 		
 	}
 	
-	function getC2D() public returns (uint){
-		updateC2D();
+	function getC2D() public view returns (uint){
 		return C2D_ratio;
 	}
 	
