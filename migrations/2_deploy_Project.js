@@ -4,7 +4,7 @@ const CentralBank = artifacts.require("CentralBank");
 
 module.exports = async function (deployer) {
   deployer.deploy(CentralBank).then( function() {
-	deployer.deploy(Oracle, { value: "1000000000000000000" });
+	deployer.deploy(Oracle);
 	return deployer.deploy(Coin, CentralBank.address);
   });
 };

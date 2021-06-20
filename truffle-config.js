@@ -43,8 +43,8 @@ module.exports = {
     // options below to some value.
     //
 	ganache: {
-		host: "localhost",     // Localhost (default: none)
-		port: 9545,            // Ganache Server
+		host: "127.0.0.1", // "172.22.160.1",      // Localhost (default: none)
+		port: 7545,            // Ganache Server
 		network_id: "*",       // Ganave Server
 	},
     // development: {

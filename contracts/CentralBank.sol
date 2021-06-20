@@ -3,7 +3,8 @@ import "./Coin.sol";
 import "./Oracle.sol";
 
 contract CentralBank{
-	uint constant coinUnit = 100; // amount of mini-units in one coin (needed because there's no float in solidity)
+	uint constant coinUnit = 1000000; // amount of mini-units in one coin (needed because there's no float in solidity)
+	uint constant bondUnit = 1000; // amount of bonds in one unit (needed because there's no float in solidity)
 	address centralBankAddress = address(this);
 	// Coin
 	Coin _coin_contract;
@@ -34,7 +35,7 @@ contract CentralBank{
 			_coin_contract.InflateBalance(_amount_to_inflate);
 		} 
 		else if (C2D_ratio < coinUnit){
-			uint bonds_amount = current_amount - (current_amount * C2D_ratio) / coinUnit;
+			uint bonds_amount = bondUnit * (current_amount - (current_amount * C2D_ratio) / coinUnit) / coinUnit;
 			_coin_contract.initAuction(bonds_amount);
 		}
 		

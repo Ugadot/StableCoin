@@ -1,3 +1,11 @@
+const fetch = require('node-fetch');
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
 // Contracts
 const Bank = artifacts.require("CentralBank")
 const Coin = artifacts.require("Coin")
@@ -5,7 +13,9 @@ const Oracle = artifacts.require("Oracle")
 
 const delay = require("delay")
 
-const coinUnit = 100;
+const coinUnit = 1000000;
+const bondUnit = 1000;
+
 //for(let i = 0; i < 10; i++) {
 //  await delay(10000).then(async () => {
 //      await instance.increaseCount({ from: account })
@@ -32,7 +42,7 @@ const transfer_money = async (account_number, accounts, coin_contract) => {
 		  acount_to_transfer = Math.round(web3.utils.hexToNumber(web3.utils.randomHex(1)) / 25) - 1;
 	  }
 	 await coin_contract.transferAmount(accounts[acount_to_transfer], amount_to_transfer, { from: accounts[account_number] });
-	 console.log('Transfered ', amount_to_transfer ,' from account ', account_number, ' to account ', acount_to_transfer);
+	 console.log('Transfered ', amount_to_transfer/coinUnit ,' from account ', account_number, ' to account ', acount_to_transfer);
 	 return amount_to_transfer;
 
   }
@@ -45,8 +55,8 @@ const playRationaly = async (account_address, bank_conract, coin_contract) => {
   console.log("playRationaly: ", account_address);
   // Get C2D ratio from bank
   var ratio = await bank_conract.getC2D();
-  console.log("ratio is: ", Number(ratio));
-  if (ratio < 100)
+  console.log("ratio is: ", Number(ratio/coinUnit));
+  if (ratio < coinUnit)
   {
 	  var have_auctioned = await coin_contract.isInAuction({from: account_address});   // Check if already applied for auction
 	  
@@ -54,7 +64,7 @@ const playRationaly = async (account_address, bank_conract, coin_contract) => {
 	  {
 		  var bond_to_money_ratio = 0.2;   // TODO: Maybe apply smarter ratio function? (risk factor + random noise?)
 		  
-		  var single_bond_price = Math.round(coinUnit * (web3.utils.hexToNumber(web3.utils.randomHex(1)) / 255) * 0.8 + 0.19);   // Should be between 100*(0.19 to 0.99)
+		  var single_bond_price = Math.round((coinUnit/bondUnit) * ((web3.utils.hexToNumber(web3.utils.randomHex(1)) / 255) * 0.8 + 0.19));   // Should be between coinUnit*(0.19 to 0.99)
 		  
 		  var my_balance = await coin_contract.getBalance({from: account_address});
 		  var affordable_money = bond_to_money_ratio * my_balance;
@@ -67,7 +77,7 @@ const playRationaly = async (account_address, bank_conract, coin_contract) => {
 			  bond_asking_amount = bond_on_sale;
 		  }
 			
-		  console.log("user: ", account_address, " applied for :", bond_asking_amount, " bonds, with price: ", single_bond_price);
+		  console.log("user: ", account_address, " applied for :", Number(bond_asking_amount), " bonds, with price: ", Number(single_bond_price/coinUnit));
 
 		  await coin_contract.applyForAuction(bond_asking_amount, single_bond_price, {from: account_address});
 		  //await coin_contract.applyForAuction(1, single_bond_price, {from: account_address});
@@ -76,7 +86,6 @@ const playRationaly = async (account_address, bank_conract, coin_contract) => {
   }
   return 0;
 }
-
 
 
 // --------------------------------------------------
@@ -93,7 +102,13 @@ module.exports = async function(callback) {
 		const bank = await Bank.deployed()
 		const oracle = await Oracle.deployed()
 
-		oracle.update();
+		//console.log('Price Is:', oracle.update());
+		// int price = oracle.update();
+		// var price = httpGet("https://blockchain.info/tobtc?currency=USD&value=50000000");
+		// console.log('Price = ', price);
+		// fetch('https://blockchain.info/ticker')
+		// .then(response => response.json())
+		// .then(data => console.log(data.USD.last));
 		
 		console.log('Bank fetched', bank.address)
 		console.log('Coin fetched', coin.address)
@@ -124,12 +139,29 @@ module.exports = async function(callback) {
 			account_address = accounts[i];
 			await coin.register({ from: account_address });
 			balance = await coin.getBalance({ from: account_address });
-			console.log('Account ', i ,' balance is: ', Number(balance));
+			console.log('Account ', i ,' balance is: ', Number(balance/coinUnit));
 		}
 		
 		var money_transferrd = 0;
 		while (1)
 		{
+			// update oracle's ratio
+			// const response = await fetch('https://blockchain.info/ticker');
+			// var data = await response.json();
+			// console.log("ratio is: ", Number((data.USD.last / 50)));
+			// await oracle.update(Math.floor(Number((data.USD.last / 50)) * coinUnit));
+			console.log("enter wanted amount of total coins \n");
+			rl.on('line', function(line){
+				console.log(line);
+			})
+			// var ourRatio = readline();
+			// if (ourRatio != ""){
+				// await oracle.update(ourRatio * coinUnit);
+			// }
+			// .then(response => response.json())
+			// .then(data => oracle.update(Math.floor((Number(data.USD.last)))))
+			// .then(data => console.log("ratio is: ", Number(data.USD.last * 10)));
+			
 			// Randomly transfer money
 			money_transferrd = 0;
 			// Conduct transfer of money
@@ -142,7 +174,7 @@ module.exports = async function(callback) {
 				for(let i = 0; i < 10; i++) {
 					account_address = accounts[i];
 					balance = await coin.getBalance({from: account_address});
-					console.log('Account ', i ,' balance is: ', Number(balance));
+					console.log('Account ', i ,' balance is: ', Number(balance/coinUnit));
 				}
 			}
 			var bonds = 0;
@@ -163,12 +195,12 @@ module.exports = async function(callback) {
 			for(let i = 0; i < 10; i++) {
 				account_address = accounts[i];
 				balance = await coin.getBalance({from: account_address});
-				console.log('Account ', i ,' balance is: ', Number(balance));
+				console.log('Account ', i ,' balance is: ', Number(balance/coinUnit));
 				bonds = await coin.getBonds({from: account_address});
 				console.log('Account ', i ,' bonds is: ', Number(bonds));
 			}
 			
-			await delay(10000);
+			await delay(5000);
 		}
 	}
 	catch(error) {

@@ -2,16 +2,17 @@ pragma solidity ^0.5.0;
 
 contract Coin{
 
-	uint constant coinUnit = 100; // amount of mini-units in one coin (needed because there's no float in solidity)
-
+	uint constant coinUnit = 1000000; // amount of mini-units in one coin (needed because there's no float in solidity)
+	uint constant bondUnit = 1000; // amount of bonds in one unit (needed because there's no float in solidity)
 	address centralBankAddress;
 	mapping(address => uint) balances;
 	mapping(address => uint) bonds;
 	mapping(address => uint) shares;
 	address[] public users;
-	uint startingAmount = 10000;
-	uint constMultiplier = 1000;
-	uint startingSharesAmount = 1;
+	uint constant startingAmount = 100 * coinUnit;
+	uint constant constMultiplier = 1000;
+	uint constant startingSharesAmount = 1;
+	uint constant bondsToSell = 30;
 	mapping(address => bool) isInAuctionMapping;
 	mapping(address => uint) auctionAmount;
 	mapping(address => uint) auctionPrice;
@@ -60,18 +61,46 @@ contract Coin{
 		require(msg.sender == centralBankAddress);
 		balances[centralBankAddress]+=_amount;
 		uint totalShares = shares[centralBankAddress];
-		
+		uint amountLeft = _amount;
+		uint bondsToSellToUser;
 		// firstly, convert bonds into coins
+		// the bank redeems bonds, but fairly (divide with all users)
 		for (uint i=0; i<users.length; i++){
-			if (bonds[users[i]] > 0){
-				balances[users[i]] += bonds[users[i]];
+			bondsToSellToUser = 0;
+			if (amountLeft > bondsToSell * (coinUnit/bondUnit)){
+				// can sell <bondsToSell> amount
+				if(bonds[users[i]] > bondsToSell){
+					// can sell <bondsToSell> amount
+					bondsToSellToUser = bondsToSell;
+				} else {
+					// can sell only <bonds[users[i]]> amount
+					bondsToSellToUser = bonds[users[i]];
+				}
+			} else {
+				// can sell only <amountLeft/coinUnit> amount
+				if(bonds[users[i]] > amountLeft/(coinUnit/bondUnit)){
+					// can sell <bondsToSell> amount
+					bondsToSellToUser = amountLeft/(coinUnit/bondUnit);
+				} else {
+					// can sell only <bonds[users[i]]> amount
+					bondsToSellToUser = bonds[users[i]];
+				}
 			}
+			balances[users[i]] += (coinUnit/bondUnit) * bondsToSellToUser;
+			balances[centralBankAddress] += (coinUnit/bondUnit) * bondsToSellToUser;
+			bonds[users[i]] -= bondsToSellToUser;
+			bonds[centralBankAddress] -= bondsToSellToUser;
+			
+			amountLeft -= (coinUnit/bondUnit) * bondsToSellToUser;
 		}
-		// now, devide added amount to all users holding shares respectivley
-		for (uint i=0; i<users.length; i++){
-			if (shares[users[i]] > 0){
-				uint new_coins = (constMultiplier * shares[users[i]] / totalShares) * _amount;
-				balances[users[i]] += new_coins/constMultiplier;
+		
+		if(bonds[centralBankAddress] == 0){
+			// now, if there are no bonds at all, devide added amount to all users holding shares respectivley
+			for (uint i=0; i<users.length; i++){
+				if (shares[users[i]] > 0){
+					uint new_coins = (constMultiplier * shares[users[i]] / totalShares) * _amount;
+					balances[users[i]] += new_coins/constMultiplier;
+				}
 			}
 		}
 	}
