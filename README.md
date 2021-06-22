@@ -1,6 +1,7 @@
 # StableCoin
 Basic Non-Collateral stablecoin implementation
 
++ based on [base-coin] (http://www.basis.io/)
 
 ## Installation
 
@@ -23,8 +24,7 @@ $ gancahe-cli -p 7545
 $ truffle migrate --reset --network ganache
 ```
 
-### Execute Truffle script in order to test multi users usage of Horse-Coin
-
+### Execute Truffle script in order to test multi users usage of Stable-Coin
 ```
 $ truffle exec ./scripts/multi_account_test.js --network ganache 
 ```
