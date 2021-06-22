@@ -204,16 +204,16 @@ module.exports = async function(callback) {
 			// first, update C2D ratio
 			await bank.updateC2D();
 			
-			var ratio = await bankt.getC2D();
-			var currentdate = new Date(); 
-			var datetime = currentdate.getDate() + "/"
+			var ratio = await bank.getC2D();
+			var currentdate = await new Date(); 
+			var datetime = await currentdate.getDate() + "/"
                 + (currentdate.getMonth()+1)  + "/" 
                 + currentdate.getFullYear() + " @ "  
                 + currentdate.getHours() + ":"  
                 + currentdate.getMinutes() + ":" 
                 + currentdate.getSeconds();
-			console.log("[Ratio] ", datetime, ' ', Number(ratio/coinUnit));
-			
+			// console.log("[Ratio] ", datetime, ' ', Number(ratio/coinUnit));
+			console.log("[Ratio] ", Date.now(), ' ', Number(ratio/coinUnit));
 			for(let i = 0; i < 10; i++) 
 			{
 				 account_address = accounts[i];
@@ -239,7 +239,6 @@ module.exports = async function(callback) {
 		}
 	}
 	catch(error) {	
-		rl.close();
 		console.log(error)
 	}
 	
