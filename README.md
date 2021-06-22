@@ -29,7 +29,7 @@ $ truffle migrate --reset --network ganache
 $ truffle exec ./scripts/multi_account_test.js --network ganache 
 ```
 
-In order to use the vissualization script redirect the output to a temp file:
+### In order to use the vissualization script redirect the output to a temp file:
 
 ```
 $ truffle exec ./scripts/multi_account_test.js --network ganache > temp_file.txt
