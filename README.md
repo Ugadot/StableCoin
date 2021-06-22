@@ -47,4 +47,4 @@ $ python view_stats.py temp_file.txt
 
 ### Visualization results
 
-![Visuallization example](./pics/example.png)
+![Visuallization example](./pics/example_2.png)
