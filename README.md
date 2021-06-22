@@ -42,3 +42,9 @@ $ truffle exec ./scripts/multi_account_test.js --network ganache > temp_file.txt
 $ python view_stats.py temp_file.txt
 ```
 
+
+## Examples
+
+### Visualization results
+
+![Visuallization example](./pics/example.png)
