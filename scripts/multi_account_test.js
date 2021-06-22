@@ -165,7 +165,7 @@ module.exports = async function(callback) {
 		while (1)
 		{
 			// update oracle's ratio
-			if (counter %10 == 0)
+			if (counter %5 == 0)
 			{
 				getAmount();	
 			}
@@ -232,7 +232,9 @@ module.exports = async function(callback) {
 				console.log('[Bond] ', i , ' ', Number(bonds));
 			}
 			counter += 1;
-			//await delay(1000);
+			if(ratio > coinUnit){
+				await delay(1000); // delay for python script
+			}
 		}
 	}
 	catch(error) {	
