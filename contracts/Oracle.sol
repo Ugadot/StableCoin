@@ -3,7 +3,7 @@ pragma solidity >= 0.5.0 < 0.6.0;
 contract Oracle {
 
     uint bitCoinDollars;
-	uint coinUnit = 1000000; // multiply by this factor because we must work with integers.
+	uint coinUnit = 100; // multiply by this factor because we must work with integers.
 
 	
     function update(uint ratio) public {

@@ -1,10 +1,12 @@
 const fetch = require('node-fetch');
 const readline = require('readline');
+var readlineSync = require('readline-sync');
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+// var rl = readline.createInterface({
+  // input: process.stdin,
+  // output: process.stdout
+// });
+
 
 // Contracts
 const Bank = artifacts.require("CentralBank")
@@ -13,8 +15,10 @@ const Oracle = artifacts.require("Oracle")
 
 const delay = require("delay")
 
-const coinUnit = 1000000;
-const bondUnit = 1000;
+const coinUnit = 100;
+const bondUnit = 1;
+
+var totalAmount;
 
 //for(let i = 0; i < 10; i++) {
 //  await delay(10000).then(async () => {
@@ -87,6 +91,18 @@ const playRationaly = async (account_address, bank_conract, coin_contract) => {
   return 0;
 }
 
+const getAmount = async () => {
+	var _amount = readlineSync.question('enter wanted amount of total coins: ');
+	if (_amount != ""){
+		totalAmount = _amount;
+	}
+	console.log('Amount is: ' + totalAmount);
+	 // await rl.question('enter wanted amount of total coins: ', (amount) => {
+		// console.log('Amount is: ' + amount);
+		// totalAmount = amount;
+	 // });
+}
+
 
 // --------------------------------------------------
 
@@ -142,18 +158,22 @@ module.exports = async function(callback) {
 			console.log('Account ', i ,' balance is: ', Number(balance/coinUnit));
 		}
 		
+
 		var money_transferrd = 0;
 		while (1)
 		{
 			// update oracle's ratio
+			getAmount();	
 			// const response = await fetch('https://blockchain.info/ticker');
 			// var data = await response.json();
 			// console.log("ratio is: ", Number((data.USD.last / 50)));
 			// await oracle.update(Math.floor(Number((data.USD.last / 50)) * coinUnit));
-			console.log("enter wanted amount of total coins \n");
-			rl.on('line', function(line){
-				console.log(line);
-			})
+			await oracle.update(totalAmount * coinUnit);
+
+			// console.log("enter wanted amount of total coins \n");
+			// rl.on('line', function(line){
+				// console.log(line);
+			// })
 			// var ourRatio = readline();
 			// if (ourRatio != ""){
 				// await oracle.update(ourRatio * coinUnit);
@@ -200,10 +220,11 @@ module.exports = async function(callback) {
 				console.log('Account ', i ,' bonds is: ', Number(bonds));
 			}
 			
-			await delay(5000);
+			await delay(1000);
 		}
 	}
-	catch(error) {
+	catch(error) {	
+		rl.close();
 		console.log(error)
 	}
 	

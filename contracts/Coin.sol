@@ -2,8 +2,8 @@ pragma solidity ^0.5.0;
 
 contract Coin{
 
-	uint constant coinUnit = 1000000; // amount of mini-units in one coin (needed because there's no float in solidity)
-	uint constant bondUnit = 1000; // amount of bonds in one unit (needed because there's no float in solidity)
+	uint constant coinUnit = 100; // amount of mini-units in one coin (needed because there's no float in solidity)
+	uint constant bondUnit = 1; // amount of bonds in one unit (needed because there's no float in solidity)
 	address centralBankAddress;
 	mapping(address => uint) balances;
 	mapping(address => uint) bonds;
@@ -59,7 +59,6 @@ contract Coin{
 	
 	function InflateBalance(uint _amount) public {
 		require(msg.sender == centralBankAddress);
-		balances[centralBankAddress]+=_amount;
 		uint totalShares = shares[centralBankAddress];
 		uint amountLeft = _amount;
 		uint bondsToSellToUser;
@@ -100,6 +99,7 @@ contract Coin{
 				if (shares[users[i]] > 0){
 					uint new_coins = (constMultiplier * shares[users[i]] / totalShares) * _amount;
 					balances[users[i]] += new_coins/constMultiplier;
+					balances[centralBankAddress] += new_coins/constMultiplier;
 				}
 			}
 		}

@@ -3,8 +3,8 @@ import "./Coin.sol";
 import "./Oracle.sol";
 
 contract CentralBank{
-	uint constant coinUnit = 1000000; // amount of mini-units in one coin (needed because there's no float in solidity)
-	uint constant bondUnit = 1000; // amount of bonds in one unit (needed because there's no float in solidity)
+	uint constant coinUnit = 100; // amount of mini-units in one coin (needed because there's no float in solidity)
+	uint constant bondUnit = 1; // amount of bonds in one unit (needed because there's no float in solidity)
 	address centralBankAddress = address(this);
 	// Coin
 	Coin _coin_contract;
