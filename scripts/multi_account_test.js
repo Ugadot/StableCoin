@@ -59,7 +59,7 @@ const playRationaly = async (account_address, bank_conract, coin_contract) => {
   console.log("playRationaly: ", account_address);
   // Get C2D ratio from bank
   var ratio = await bank_conract.getC2D();
-  console.log("ratio is: ", Number(ratio/coinUnit));
+  //console.log("ratio is: ", Number(ratio/coinUnit));
   if (ratio < coinUnit)
   {
 	  var have_auctioned = await coin_contract.isInAuction({from: account_address});   // Check if already applied for auction
@@ -155,7 +155,8 @@ module.exports = async function(callback) {
 			account_address = accounts[i];
 			await coin.register({ from: account_address });
 			balance = await coin.getBalance({ from: account_address });
-			console.log('Account ', i ,' balance is: ', Number(balance/coinUnit));
+			//console.log('Account ', i ,' balance is: ', Number(balance/coinUnit));
+			console.log('[Balance] ', i , ' ', Number(balance/coinUnit));
 		}
 		
 
@@ -187,20 +188,32 @@ module.exports = async function(callback) {
 			// Conduct transfer of money
 			for(let i = 0; i < 10; i++) {
 				money_transferrd = money_transferrd + await transfer_money(i, accounts, coin);
-				//console.log('Account ', i ,' money transfer: ', Number(money_transferrd));
+				console.log('Account ', i ,' money transfer: ', Number(money_transferrd));
 			}
 			if (money_transferrd > 0)
 			{
 				for(let i = 0; i < 10; i++) {
 					account_address = accounts[i];
 					balance = await coin.getBalance({from: account_address});
-					console.log('Account ', i ,' balance is: ', Number(balance/coinUnit));
+					//console.log('Account ', i ,' balance is: ', Number(balance/coinUnit));
+					console.log('[Balance] ', i , ' ', Number(balance/coinUnit));
 				}
 			}
 			var bonds = 0;
 			// Play rationaly with C2D (bonds + shares management)
 			// first, update C2D ratio
 			await bank.updateC2D();
+			
+			var ratio = await bankt.getC2D();
+			var currentdate = new Date(); 
+			var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+			console.log("[Ratio] ", datetime, ' ', Number(ratio/coinUnit));
+			
 			for(let i = 0; i < 10; i++) 
 			{
 				 account_address = accounts[i];
@@ -215,9 +228,11 @@ module.exports = async function(callback) {
 			for(let i = 0; i < 10; i++) {
 				account_address = accounts[i];
 				balance = await coin.getBalance({from: account_address});
-				console.log('Account ', i ,' balance is: ', Number(balance/coinUnit));
+				//console.log('Account ', i ,' balance is: ', Number(balance/coinUnit));
+				console.log('[Balance] ', i , ' ', Number(balance/coinUnit));
 				bonds = await coin.getBonds({from: account_address});
-				console.log('Account ', i ,' bonds is: ', Number(bonds));
+				//console.log('Account ', i ,' bonds is: ', Number(bonds));
+				console.log('[Bond] ', i , ' ', Number(bonds));
 			}
 			
 			await delay(1000);

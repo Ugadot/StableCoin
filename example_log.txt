@@ -1,0 +1,12 @@
+[Ratio] 1 1.04
+[Ratio] 2 0.78
+[Balance] 1 100
+[Balance] 2 100
+[Bond] 4 22
+[Bond] 1 12
+[Ratio] 3 0.82
+[Ratio] 4 0.90
+[Ratio] 5 0.99
+[Bond] 5 100
+[Bond] 1 0
+[Ratio] 6 1.00
