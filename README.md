@@ -1,7 +1,7 @@
 # StableCoin
 Basic Non-Collateral stablecoin implementation
 
-+ based on [base-coin] (http://www.basis.io/)
++ based on [base-coin](http://www.basis.io/)
 
 ## Installation
 
