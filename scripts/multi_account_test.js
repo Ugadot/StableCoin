@@ -56,7 +56,7 @@ const transfer_money = async (account_number, accounts, coin_contract) => {
 
 const playRationaly = async (account_address, bank_conract, coin_contract) => {
   
-  console.log("playRationaly: ", account_address);
+  //console.log("playRationaly: ", account_address);
   // Get C2D ratio from bank
   var ratio = await bank_conract.getC2D();
   //console.log("ratio is: ", Number(ratio/coinUnit));
@@ -81,7 +81,7 @@ const playRationaly = async (account_address, bank_conract, coin_contract) => {
 			  bond_asking_amount = bond_on_sale;
 		  }
 			
-		  console.log("user: ", account_address, " applied for :", Number(bond_asking_amount), " bonds, with price: ", Number(single_bond_price/coinUnit));
+		  //console.log("user: ", account_address, " applied for :", Number(bond_asking_amount), " bonds, with price: ", Number(single_bond_price/coinUnit));
 
 		  await coin_contract.applyForAuction(bond_asking_amount, single_bond_price, {from: account_address});
 		  //await coin_contract.applyForAuction(1, single_bond_price, {from: account_address});
@@ -161,10 +161,14 @@ module.exports = async function(callback) {
 		
 
 		var money_transferrd = 0;
+		var counter = 0;
 		while (1)
 		{
 			// update oracle's ratio
-			getAmount();	
+			if (counter %10 == 0)
+			{
+				getAmount();	
+			}
 			// const response = await fetch('https://blockchain.info/ticker');
 			// var data = await response.json();
 			// console.log("ratio is: ", Number((data.USD.last / 50)));
@@ -188,7 +192,7 @@ module.exports = async function(callback) {
 			// Conduct transfer of money
 			for(let i = 0; i < 10; i++) {
 				money_transferrd = money_transferrd + await transfer_money(i, accounts, coin);
-				console.log('Account ', i ,' money transfer: ', Number(money_transferrd));
+				//console.log('Account ', i ,' money transfer: ', Number(money_transferrd));
 			}
 			if (money_transferrd > 0)
 			{
@@ -205,15 +209,8 @@ module.exports = async function(callback) {
 			await bank.updateC2D();
 			
 			var ratio = await bank.getC2D();
-			var currentdate = await new Date(); 
-			var datetime = await currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + " @ "  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
-			// console.log("[Ratio] ", datetime, ' ', Number(ratio/coinUnit));
 			console.log("[Ratio] ", Date.now(), ' ', Number(ratio/coinUnit));
+
 			for(let i = 0; i < 10; i++) 
 			{
 				 account_address = accounts[i];
@@ -234,8 +231,8 @@ module.exports = async function(callback) {
 				//console.log('Account ', i ,' bonds is: ', Number(bonds));
 				console.log('[Bond] ', i , ' ', Number(bonds));
 			}
-			
-			await delay(1000);
+			counter += 1;
+			//await delay(1000);
 		}
 	}
 	catch(error) {	
