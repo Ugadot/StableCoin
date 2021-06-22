@@ -2,8 +2,43 @@
 Basic Non-Collateral stablecoin implementation
 
 
-# TODO:
-1) Create Oracle smart contract
-2) Create "Central Bank" algorithm contract
-3) Create Basic Coin smart contrac, that tracks all coins, blances, shares and bonds
-4) Create Basic Player Strategy smart contract
+## Installation
+
+### Requirements
++  [ganache-cli](https://github.com/trufflesuite/ganache-cli): a command-line version of Truffle's blockchain server.
++  [truffle](https://github.com/trufflesuite/truffle): development environment, for Ethereum smart contracts.
+
+
+## Usage
+
+### Run ganache test chain
+
+```
+$ gancahe-cli -p 7545
+```
+
+### Use truffle to migrate contracts to ganache test chain
+
+```
+$ truffle migrate --reset --network ganache
+```
+
+### Execute Truffle script in order to test multi users usage of Horse-Coin
+
+```
+$ truffle exec ./scripts/multi_account_test.js --network ganache 
+```
+
+In order to use the vissualization script redirect the output to a temp file:
+
+```
+$ truffle exec ./scripts/multi_account_test.js --network ganache > temp_file.txt
+```
+
+
+
+### Visualization
+```
+$ python view_stats.py temp_file.txt
+```
+
